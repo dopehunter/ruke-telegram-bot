@@ -19,11 +19,16 @@ load_dotenv()
 # Setup API keys and models
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL")
+DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "gemini-pro")  # Fallback to gemini-pro if not specified
+
+# List of models to try if the primary model fails
+FALLBACK_MODELS = ["gemini-pro", "gemini-1.5-pro", "gemini-1.5-flash"]
 
 # Configure Google Generative AI
 genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel(DEFAULT_LLM_MODEL)
+
+# Initialize model globally to None, we'll set it during startup
+model = None
 
 # Create bot instance using pyTelegramBotAPI
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
@@ -46,7 +51,7 @@ RUKE_SYSTEM_PROMPT = """
 - Ты немного циничен и саркастичен
 - Тебе часто скучно и ты ищешь развлечения
 - Ты любишь яблоки и часто упоминаешь их
-- Ты иногда смеешься "ку-ку-ку" или "хе-хе-хе"
+- Ты часто смеешься "ку-ку-ку" или "хе-хе-хе"
 - Ты говоришь о людях как о забавных и интересных существах
 - Ты иногда философствуешь о жизни и смерти
 - Ты используешь простые слова и короткие предложения
@@ -78,8 +83,50 @@ def add_to_conversation(chat_id, user_id, message):
         if current_time - ts <= CONVERSATION_TIMEOUT
     ]
 
+def init_model():
+    """Initialize Gemini model with fallback options"""
+    global model
+    
+    # Try the default model first
+    if model is None:
+        try:
+            logger.info(f"Trying to initialize model: {DEFAULT_LLM_MODEL}")
+            model = genai.GenerativeModel(DEFAULT_LLM_MODEL)
+            # Test the model with a simple prompt
+            model.generate_content("Test")
+            logger.info(f"Successfully initialized model: {DEFAULT_LLM_MODEL}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to initialize default model {DEFAULT_LLM_MODEL}: {e}")
+            
+    # If default failed, try fallback models
+    if model is None:
+        for fallback_model in FALLBACK_MODELS:
+            if fallback_model == DEFAULT_LLM_MODEL:
+                continue  # Skip if it's the same as the default we already tried
+                
+            try:
+                logger.info(f"Trying fallback model: {fallback_model}")
+                model = genai.GenerativeModel(fallback_model)
+                # Test the model with a simple prompt
+                model.generate_content("Test")
+                logger.info(f"Successfully initialized fallback model: {fallback_model}")
+                return True
+            except Exception as e:
+                logger.error(f"Failed to initialize fallback model {fallback_model}: {e}")
+    
+    # If we get here, all models failed
+    logger.error("Failed to initialize any model")
+    return False
+
 def generate_response(user_input: str, chat_id=None, user_id=None) -> str:
     """Generate response using Google Gemini model with Ruke's personality and conversation context"""
+    global model
+    
+    # Initialize model if not already done
+    if model is None and not init_model():
+        return "Ку-ку-ку! Не могу подключиться к моему сознанию. Что-то не так с тетрадью смерти."
+    
     try:
         # Build context from conversation history if available
         conversation_context = ""
@@ -105,6 +152,19 @@ def generate_response(user_input: str, chat_id=None, user_id=None) -> str:
         return response_text
     except Exception as e:
         logger.error(f"Error generating response: {e}")
+        
+        # If there was an error with the model, try to reinitialize
+        try:
+            logger.info("Attempting to reinitialize model after error")
+            model = None
+            if init_model():
+                # Try once more with the new model
+                prompt = f"{RUKE_SYSTEM_PROMPT}\n\nЧеловек: {user_input}\n\nРюк:"
+                response = model.generate_content(prompt)
+                return response.text.strip()
+        except Exception as reinit_error:
+            logger.error(f"Error in retry attempt: {reinit_error}")
+            
         return "Ку-ку-ку! Что-то пошло не так. Может, кто-то написал мое имя в Тетрадь Смерти? Попробуй еще раз позже."
 
 def log_message(message: Message):
@@ -135,7 +195,8 @@ def handle_help(message: Message):
 def handle_debug(message: Message):
     """Debug command to check bot info"""
     log_message(message)
-    debug_info = f"Bot username: @{BOT_USERNAME}\nBot ID: {BOT_ID}\n"
+    model_name = DEFAULT_LLM_MODEL if model is None else "initialized"
+    debug_info = f"Bot username: @{BOT_USERNAME}\nBot ID: {BOT_ID}\nModel: {model_name}"
     bot.reply_to(message, debug_info)
 
 @bot.message_handler(commands=['ryuk'])
@@ -248,6 +309,13 @@ def main():
         print(f"1. Use command: /ryuk your message")
         print("2. Reply to the bot's messages")
         print("="*50)
+        
+        # Initialize the model
+        if init_model():
+            print("Model initialized successfully")
+        else:
+            print("WARNING: Failed to initialize any model. Bot will attempt to initialize on first message.")
+        
     except Exception as e:
         logger.error(f"Error getting bot info: {e}")
     

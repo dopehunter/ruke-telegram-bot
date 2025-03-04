@@ -39,7 +39,7 @@ pip install -r requirements.txt
    ```
    TELEGRAM_TOKEN=your_telegram_token_here
    GOOGLE_API_KEY=your_google_api_key_here
-   DEFAULT_LLM_MODEL=gemini-2.0-flash-001
+   DEFAULT_LLM_MODEL=gemini-pro
    ```
 
 ### Running the Bot
@@ -73,8 +73,15 @@ In group chats, the bot will only respond to:
 4. In Replit, add your environment variables in the Secrets tab:
    - Add `TELEGRAM_TOKEN` with your Telegram bot token
    - Add `GOOGLE_API_KEY` with your Google Gemini API key
-   - Add `DEFAULT_LLM_MODEL` with the model name
+   - Add `DEFAULT_LLM_MODEL` with the model name (use `gemini-pro`)
 5. Click "Run" to start your bot
+
+## Troubleshooting
+
+If you see an error like "unexpected model name format", you need to update the Gemini model name in your environment variables. Currently supported models include:
+- `gemini-pro` (recommended)
+- `gemini-1.5-pro`
+- `gemini-1.5-flash`
 
 ## Notes
 
