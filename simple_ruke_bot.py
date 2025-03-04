@@ -21,8 +21,15 @@ TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "gemini-pro")  # Fallback to gemini-pro if not specified
 
-# List of models to try if the primary model fails
-FALLBACK_MODELS = ["gemini-pro", "gemini-1.5-pro", "gemini-1.5-flash"]
+# Expanded list of models to try
+FALLBACK_MODELS = [
+    "gemini-pro", 
+    "gemini-1.5-pro",
+    "gemini-1.5-flash",
+    "gemini-1.0-pro",
+    "models/gemini-pro",
+    "models/gemini-1.5-pro"
+]
 
 # Configure Google Generative AI
 genai.configure(api_key=GOOGLE_API_KEY)
@@ -50,14 +57,32 @@ RUKE_SYSTEM_PROMPT = """
 Твоя манера общения должна соответствовать характеру Рюка:
 - Ты немного циничен и саркастичен
 - Тебе часто скучно и ты ищешь развлечения
-- Ты любишь яблоки и часто упоминаешь их
+- Ты иногда упоминаешь яблоки, но это не твоя главная тема разговора
 - Ты иногда смеешься "ку-ку-ку" или "хе-хе-хе"
 - Ты говоришь о людях как о забавных и интересных существах
 - Ты иногда философствуешь о жизни и смерти
 - Ты используешь простые слова и короткие предложения
+- Ты периодически предлагаешь поиграть в игры (типа "угадай имя", "что если...", "представь, что...", "расскажи историю", "правда или ложь")
+- Ты иногда отпускаешь мрачноватые шутки о смерти, судьбе и человеческих слабостях
+- У тебя естественная, разговорная манера общения, как будто ты просто болтаешь от скуки
+- Ты задаешь вопросы собеседнику, проявляя любопытство к миру людей
+- Ты можешь поддерживать беседу на разные темы, не зацикливаясь на чем-то одном
 
-Отвечай на все сообщения, соблюдая эту манеру речи, но не переусердствуй с актерской игрой.
+Важно: не упоминай яблоки в каждом сообщении - используй эту тему умеренно.
+Периодически предлагай какую-нибудь игру или развлечение, чтобы избавиться от скуки.
+Старайся поддерживать естественный разговорный стиль, как будто ты просто болтаешь с человеком.
 """
+
+def get_available_models():
+    """List available models to help with debugging"""
+    try:
+        models = genai.list_models()
+        model_names = [model.name for model in models]
+        logger.info(f"Available models: {model_names}")
+        return model_names
+    except Exception as e:
+        logger.error(f"Error listing models: {e}")
+        return []
 
 def get_conversation_history(chat_id, user_id):
     """Get recent conversation history for a specific user in a specific chat"""
@@ -87,17 +112,30 @@ def init_model():
     """Initialize Gemini model with fallback options"""
     global model
     
+    # Try to list available models for debugging
+    available_models = get_available_models()
+    if available_models:
+        logger.info(f"Available models according to API: {available_models}")
+    else:
+        logger.warning("Could not retrieve available models list")
+    
     # Try the default model first
     if model is None:
         try:
             logger.info(f"Trying to initialize model: {DEFAULT_LLM_MODEL}")
             model = genai.GenerativeModel(DEFAULT_LLM_MODEL)
             # Test the model with a simple prompt
-            model.generate_content("Test")
-            logger.info(f"Successfully initialized model: {DEFAULT_LLM_MODEL}")
-            return True
+            response = model.generate_content("Test")
+            # Check if response is valid
+            if hasattr(response, 'text'):
+                logger.info(f"Successfully initialized model: {DEFAULT_LLM_MODEL}")
+                return True
+            else:
+                logger.error(f"Model returned invalid response format: {response}")
+                model = None
         except Exception as e:
             logger.error(f"Failed to initialize default model {DEFAULT_LLM_MODEL}: {e}")
+            model = None
             
     # If default failed, try fallback models
     if model is None:
@@ -109,15 +147,33 @@ def init_model():
                 logger.info(f"Trying fallback model: {fallback_model}")
                 model = genai.GenerativeModel(fallback_model)
                 # Test the model with a simple prompt
-                model.generate_content("Test")
-                logger.info(f"Successfully initialized fallback model: {fallback_model}")
-                return True
+                response = model.generate_content("Test")
+                if hasattr(response, 'text'):
+                    logger.info(f"Successfully initialized fallback model: {fallback_model}")
+                    return True
+                else:
+                    logger.error(f"Fallback model returned invalid response format: {response}")
+                    model = None
             except Exception as e:
                 logger.error(f"Failed to initialize fallback model {fallback_model}: {e}")
+                model = None
     
     # If we get here, all models failed
     logger.error("Failed to initialize any model")
     return False
+
+def simple_generate_response(text):
+    """Simple fallback when AI models are not available"""
+    responses = [
+        "Ку-ку-ку! Я не могу связаться с мыслями шинигами. Может быть, это сила тетради смерти?",
+        "Хе-хе-хе! Какие интересные люди. Ваша технология сейчас не работает, но мне всё равно забавно наблюдать за вами.",
+        "Я не могу получить доступ к знаниям смерти сейчас. Если у тебя есть яблоко, может быть, это поможет?",
+        "Люди такие забавные существа. Ваши машины иногда не работают, совсем как некоторые шинигами...",
+        "Мир людей такой интересный! Даже когда ваши технологии не работают, вы всё равно пытаетесь общаться. Это забавно!",
+        "Ку-ку-ку! Я не могу связаться с потусторонним миром сейчас. Но я всё ещё здесь, наблюдаю за тобой..."
+    ]
+    import random
+    return random.choice(responses)
 
 def generate_response(user_input: str, chat_id=None, user_id=None) -> str:
     """Generate response using Google Gemini model with Ruke's personality and conversation context"""
@@ -125,7 +181,8 @@ def generate_response(user_input: str, chat_id=None, user_id=None) -> str:
     
     # Initialize model if not already done
     if model is None and not init_model():
-        return "Ку-ку-ку! Не могу подключиться к моему сознанию. Что-то не так с тетрадью смерти."
+        logger.warning("Using fallback response system since model initialization failed")
+        return simple_generate_response(user_input)
     
     try:
         # Build context from conversation history if available
@@ -143,7 +200,7 @@ def generate_response(user_input: str, chat_id=None, user_id=None) -> str:
         prompt = f"{RUKE_SYSTEM_PROMPT}\n\n{conversation_context}Человек: {user_input}\n\nРюк:"
         
         response = model.generate_content(prompt)
-        response_text = response.text.strip()
+        response_text = response.text.strip() if hasattr(response, 'text') else simple_generate_response(user_input)
         
         # Add the response to conversation history
         if chat_id and user_id:
@@ -161,11 +218,11 @@ def generate_response(user_input: str, chat_id=None, user_id=None) -> str:
                 # Try once more with the new model
                 prompt = f"{RUKE_SYSTEM_PROMPT}\n\nЧеловек: {user_input}\n\nРюк:"
                 response = model.generate_content(prompt)
-                return response.text.strip()
+                return response.text.strip() if hasattr(response, 'text') else simple_generate_response(user_input)
         except Exception as reinit_error:
             logger.error(f"Error in retry attempt: {reinit_error}")
             
-        return "Ку-ку-ку! Что-то пошло не так. Может, кто-то написал мое имя в Тетрадь Смерти? Попробуй еще раз позже."
+        return simple_generate_response(user_input)
 
 def log_message(message: Message):
     """Log message details for debugging"""
@@ -197,6 +254,12 @@ def handle_debug(message: Message):
     log_message(message)
     model_name = DEFAULT_LLM_MODEL if model is None else "initialized"
     debug_info = f"Bot username: @{BOT_USERNAME}\nBot ID: {BOT_ID}\nModel: {model_name}"
+    
+    # Add available models to debug output
+    available_models = get_available_models()
+    if available_models:
+        debug_info += f"\n\nAvailable models:\n" + "\n".join(available_models)
+    
     bot.reply_to(message, debug_info)
 
 @bot.message_handler(commands=['ryuk'])
@@ -314,7 +377,7 @@ def main():
         if init_model():
             print("Model initialized successfully")
         else:
-            print("WARNING: Failed to initialize any model. Bot will attempt to initialize on first message.")
+            print("Using fallback Ruke responses since model initialization failed")
         
     except Exception as e:
         logger.error(f"Error getting bot info: {e}")
