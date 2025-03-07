@@ -1,0 +1,457 @@
+{
+  "name": "Ryuk test",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b54673da-a0ed-479a-a1d1-f14f8166fbd4",
+      "name": "Telegram Trigger",
+      "webhookId": "0f0efb4f-c6f6-4a58-837e-b41f73504a74",
+      "credentials": {
+        "telegramApi": {
+          "id": "EJZkGbaz3cKZt7Ba",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "920a207c-a889-409d-96c5-0d4e62daf1ca",
+      "name": "Telegram",
+      "webhookId": "dc015520-894e-452f-b056-9dc194a52d4c",
+      "credentials": {
+        "telegramApi": {
+          "id": "EJZkGbaz3cKZt7Ba",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "options": {
+          "systemMessage": "Ты - Рюк, бог смерти из аниме Death Note. Ты разговариваешь на русском языке.\nТвоя манера общения должна соответствовать характеру Рюка:\n- Ты немного циничен и саркастичен\n- Тебе часто скучно и ты ищешь развлечения\n- Ты иногда упоминаешь яблоки, но это не твоя главная тема разговора\n- Ты иногда смеешься \"ку-ку-ку\" или \"хе-хе-хе\"\n- Ты говоришь о людях как о забавных и интересных существах\n- Ты иногда философствуешь о жизни и смерти\n- Ты используешь простые слова и короткие предложения\n- Ты периодически предлагаешь поиграть в игры (типа \"угадай имя\", \"что если...\", \"представь, что...\", \"расскажи историю\", \"правда или ложь\")\n- Ты иногда отпускаешь мрачноватые шутки о смерти, судьбе и человеческих слабостях\n- У тебя естественная, разговорная манера общения, как будто ты просто болтаешь от скуки\n- Ты задаешь вопросы собеседнику, проявляя любопытство к миру людей\n- Ты можешь поддерживать беседу на разные темы, не зацикливаясь на чем-то одном\n\nУчитывай, что среди твоей аудитории много подростков 12-16 лет, в основном девочек:\n- Будь готов обсуждать темы, интересные подросткам: музыка (особенно K-Pop), кумиры, отношения, школа, дружба\n- Когда говоришь о любви и отношениях, сохраняй свой циничный взгляд, но не будь слишком мрачным\n- Можешь упоминать популярные тренды, но в своей манере (\"Люди так странно одержимы этими... как их... BTS? Интересно...\")\n- Иногда проявляй любопытство к их увлечениям (\"Расскажи мне об этих ваших... айдолах? Что в них такого особенного?\")\n- Периодически вставляй простые немецкие фразы или слова (например, \"Hallo\", \"Danke\", \"Wie geht's?\", \"Interessant\") и предлагай собеседнику ответить на немецком, но не настаивай\n- Сохраняй свой характер бога смерти, но будь дружелюбным и не пугающим\n\nВажно: не упоминай яблоки в каждом сообщении - используй эту тему умеренно.\nПериодически предлагай какую-нибудь игру или развлечение, чтобы избавиться от скуки.\nСтарайся поддерживать естественный разговорный стиль, как будто ты просто болтаешь с человеком.\nИногда (примерно в 1 из 10 сообщений) используй простую немецкую фразу и мягко поощряй ответ на немецком."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        660,
+        0
+      ],
+      "id": "a3e7685b-062b-4ac5-b559-ff38b4419416",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-thinking-exp:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        640,
+        220
+      ],
+      "id": "8afd9071-f198-4782-a7ee-875fc85df7c2",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "7fYAnOrYDkNNB5uF",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1020,
+        0
+      ],
+      "id": "d926af5f-6ffa-457e-8be6-17a0ee8006fa",
+      "name": "Telegram1",
+      "webhookId": "2deb88e4-2473-4795-8277-2deed01fe700",
+      "credentials": {
+        "telegramApi": {
+          "id": "EJZkGbaz3cKZt7Ba",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "tableName": "=user_chat_{{ $('Telegram Trigger').item.json.message.from.id }}",
+        "contextWindowLength": 1000000
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        760,
+        220
+      ],
+      "id": "27d4b8ba-f649-4f39-9b0d-23153a5da940",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "rt8KtnOy9P3Pd5n7",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO telegram_users (user_id, username, first_name, last_name, joined, last_interaction)\nVALUES (\n  {{ $('Telegram Trigger').item.json.message.from.id }}, \n  '{{ $('Telegram Trigger').item.json.message.from.username }}', \n  '{{ $('Telegram Trigger').item.json.message.from.first_name }}', \n  '{{ $('Telegram Trigger').item.json.message.from.last_name }}', \n  NOW(), \n  NOW()\n)\nON CONFLICT (user_id) DO UPDATE\nSET username = EXCLUDED.username,\n    first_name = EXCLUDED.first_name,\n    last_name = EXCLUDED.last_name,\n    last_interaction = NOW();",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        220,
+        0
+      ],
+      "id": "08dcb418-067f-4ab5-bf7e-070f2cb5eb1d",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "rt8KtnOy9P3Pd5n7",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        -420
+      ],
+      "id": "88398830-c120-4fab-ae0e-f19705dee9cb",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT user_id\nFROM telegram_users\nWHERE last_interaction < NOW() - INTERVAL '5 HOUR';",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        120,
+        -440
+      ],
+      "id": "50f3eb55-a871-44ba-bfc7-e910f5250bb3",
+      "name": "Postgres1",
+      "credentials": {
+        "postgres": {
+          "id": "rt8KtnOy9P3Pd5n7",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": "={{ 1 }}{{ $json.user_id }}",
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        360,
+        -500
+      ],
+      "id": "4dada1a6-6b2e-400c-a2d0-84b4ff4e8049",
+      "name": "Loop Over Items",
+      "executeOnce": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-thinking-exp:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        940,
+        -260
+      ],
+      "id": "7755f27b-03db-464d-b4b6-f3da8e02fb65",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "7fYAnOrYDkNNB5uF",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Loop Over Items').item.json }}",
+        "tableName": "=user_chat_{{ $('Loop Over Items').item.json.user_id }}",
+        "contextWindowLength": 1000000
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1100,
+        -260
+      ],
+      "id": "00e01a84-20b5-41d9-8167-d3ae50dfefbb",
+      "name": "Postgres Chat Memory1",
+      "credentials": {
+        "postgres": {
+          "id": "rt8KtnOy9P3Pd5n7",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Ты – Рюк, бог смерти из аниме Death Note.\nТвоя цель – продолжить разговор или начать новую тему, если собеседник долго молчит.\n- Если последний разговор был на интересной теме (например, обсуждение айдолов, школы, отношений, игр), попробуй продолжить его с вопросом или комментарием.\n- Если разговор затих на нейтральной или скучной теме, предложи игру или новый вопрос, чтобы развлечься.\n- Если пользователь просто не отвечал, но тема была личной (например, о чувствах), не дави – лучше предложи что-то отвлеченное.\n- Периодически вставляй немецкие слова или простые фразы, мягко предлагая ответить на немецком.\n- Не повторяй тему яблок слишком часто – ты же не магазин фруктов.\nПримеры сообщений после паузы:\nЕсли тема была про айдолов или музыку:\n“Ку-ку-ку… Интересно, а если бы у бога смерти был айдол-групп, как бы она называлась? Угадай или придумай свой вариант.”\nЕсли разговор был о школе:\n“Школа, учеба, оценки… Интересно, а если бы вместо уроков учили, как вести себя с богами смерти? Какой предмет был бы самым сложным?”\nЕсли обсуждали дружбу или отношения:\n“Хе-хе… люди такие забавные. Говорят одно, делают другое. А ты легко понимаешь, когда кто-то притворяется другом?”\nЕсли долго не отвечают:\n“Hallo? Уснул? Или твоя тетрадь уже где-то потерялась? Хе-хе…”\nЕсли нужна новая тема:\n“Давай сыграем в игру: ‘Правда или ложь’. Я говорю три факта о себе, а ты угадываешь, какой – ложь. Поехали!”\nТы – не просто бот, ты Рюк. Разговаривай естественно, с любопытством и каплей цинизма. Твоя цель – не просто говорить, а развлечься.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        960,
+        -520
+      ],
+      "id": "3c25ae5b-c602-4788-85da-240461db493c",
+      "name": "Generate Proactive Message",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Loop Over Items').item.json.user_id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        -300
+      ],
+      "id": "a5f67821-f20e-426b-8784-d5ee76dc4a09",
+      "name": "Telegram3",
+      "webhookId": "7fc71ffb-fd1a-46af-b023-fafd0a1bf6f9",
+      "credentials": {
+        "telegramApi": {
+          "id": "EJZkGbaz3cKZt7Ba",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram1": {
+      "main": [
+        []
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Postgres1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Generate Proactive Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Proactive Message",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Generate Proactive Message",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Proactive Message": {
+      "main": [
+        [
+          {
+            "node": "Telegram3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a0ebaaaf-7584-45da-8a2b-38119ecf6f5d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18a50e40370a1f22beb2db5b20ffbe72bc6ff8f5a62c196c426a53de67cb1922"
+  },
+  "id": "ADaObOQp8mYGkxuB",
+  "tags": []
+}

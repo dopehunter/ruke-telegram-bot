@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Death Note: Justice Awaits</title>
+    <link rel="stylesheet" href="./src/styles/main.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body class="death-note-theme">
+    <div id="app">
+        <header class="app-header">
+            <div class="logo">Death Note: Justice Awaits</div>
+            <div class="user-info" id="userInfo"></div>
+        </header>
+        
+        <main id="mainContent" class="main-content">
+            <div id="loading" class="loading-screen">
+                <div class="death-note-loading">
+                    <img src="./src/assets/images/death_note_cover.jpg" alt="Death Note" class="loading-image" id="loadingImage">
+                    <p>The Death Note has chosen you...</p>
+                </div>
+            </div>
+            
+            <div id="menuScreen" class="screen hide">
+                <h1>Welcome, Kira</h1>
+                <p class="intro-text">You have found the Death Note. With its power, you can bring justice to the world.</p>
+                <div class="menu-buttons">
+                    <button id="startGameBtn" class="main-button">Start Justice</button>
+                    <button id="rulesBtn" class="secondary-button">Rules</button>
+                    <button id="backToChatBtn" class="secondary-button">Return to Ryuk</button>
+                </div>
+            </div>
+            
+            <div id="gameScreen" class="screen hide">
+                <div class="game-header">
+                    <h2 id="caseTitle">Case #1: The Serial Killer</h2>
+                    <div class="game-stats">
+                        <span id="daysLeft">Days left: 5</span>
+                        <span id="noteUses">Death Note uses: 3</span>
+                    </div>
+                </div>
+                
+                <div class="game-content">
+                    <div id="caseBoard" class="case-board">
+                        <!-- Case content will be loaded here -->
+                    </div>
+                    
+                    <div id="deathNotePanel" class="death-note-panel hide">
+                        <div class="death-note-page">
+                            <h3>Death Note</h3>
+                            <p class="note-rules">The human whose name is written in this note shall die.</p>
+                            <div class="name-input-area">
+                                <input type="text" id="nameInput" placeholder="Write name here...">
+                                <button id="writeNameBtn">Write</button>
+                            </div>
+                            <div id="writtenNames" class="written-names">
+                                <!-- Names written in the Death Note will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-controls">
+                    <button id="viewEvidenceBtn" class="game-button">Evidence</button>
+                    <button id="viewSuspectsBtn" class="game-button">Suspects</button>
+                    <button id="useDeathNoteBtn" class="game-button">Use Death Note</button>
+                    <button id="solveBtn" class="game-button">Solve Case</button>
+                </div>
+            </div>
+            
+            <div id="resultsScreen" class="screen hide">
+                <h2>Case Results</h2>
+                <div id="resultsSummary" class="results-summary">
+                    <!-- Results will be shown here -->
+                </div>
+                <div class="results-actions">
+                    <button id="nextCaseBtn" class="main-button">Next Case</button>
+                    <button id="shareResultsBtn" class="secondary-button">Share Results</button>
+                    <button id="returnToMenuBtn" class="secondary-button">Main Menu</button>
+                </div>
+            </div>
+            
+            <div id="rulesScreen" class="screen hide">
+                <h2>Rules of the Death Note</h2>
+                <div class="rules-content">
+                    <ol class="rules-list">
+                        <li>The human whose name is written in this note shall die.</li>
+                        <li>This note will not take effect unless the writer has the person's face in mind when writing their name.</li>
+                        <li>If the cause of death is written within the next 40 seconds of writing the person's name, it will happen.</li>
+                        <li>If the cause of death is not specified, the person will simply die of a heart attack.</li>
+                        <li>After writing the cause of death, details of the death should be written in the next 6 minutes and 40 seconds.</li>
+                    </ol>
+                    <h3>Game Rules</h3>
+                    <ul class="game-rules-list">
+                        <li>Solve crimes by analyzing evidence and identifying suspects.</li>
+                        <li>Use the Death Note wisely - you have a limited number of uses.</li>
+                        <li>Writing an innocent person's name will lead to negative consequences.</li>
+                        <li>Each action consumes time - manage your days carefully.</li>
+                        <li>To win, you must solve all cases and eliminate all criminals.</li>
+                    </ul>
+                </div>
+                <button id="backFromRulesBtn" class="secondary-button">Back</button>
+            </div>
+        </main>
+        
+        <footer class="app-footer">
+            <p>Created by Ryuk • Light Yagami is watching</p>
+        </footer>
+    </div>
+    
+    <script src="./src/utils/telegramApp.js"></script>
+    <script src="./src/utils/gameLogic.js"></script>
+    <script src="./src/index.js"></script>
+</body>
+</html> 

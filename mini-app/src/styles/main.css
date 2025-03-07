@@ -1,0 +1,467 @@
+/* Death Note Mini-App Styles */
+
+/* Font imports */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Old+Standard+TT:wght@400;700&display=swap');
+
+/* Global Styles */
+:root {
+    --dn-black: #0a0a0a;
+    --dn-red: #b20000;
+    --dn-white: #f0f0f0;
+    --dn-gray: #2a2a2a;
+    --dn-light-gray: #444444;
+    --dn-gold: #d4af37;
+    --font-gothic: 'Cinzel', serif;
+    --font-normal: 'Old Standard TT', serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: var(--dn-black);
+    color: var(--dn-white);
+    font-family: var(--font-normal);
+    line-height: 1.6;
+}
+
+.death-note-theme {
+    background-image: url('../assets/images/death_note_bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: var(--dn-black);
+    position: relative;
+}
+
+.death-note-theme::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: -1;
+}
+
+/* App Container */
+#app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Header Styles */
+.app-header {
+    background-color: var(--dn-black);
+    border-bottom: 2px solid var(--dn-red);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: var(--font-gothic);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--dn-white);
+    letter-spacing: 1px;
+}
+
+.user-info {
+    font-size: 0.9rem;
+    color: var(--dn-light-gray);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Screen Management */
+.screen {
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s ease;
+}
+
+.hide {
+    display: none;
+}
+
+/* Loading Screen */
+.loading-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.death-note-loading {
+    text-align: center;
+}
+
+.loading-image {
+    max-width: 200px;
+    margin-bottom: 1rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Menu Screen */
+#menuScreen {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+#menuScreen h1 {
+    font-family: var(--font-gothic);
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--dn-red);
+    text-shadow: 1px 1px 2px var(--dn-black);
+}
+
+.intro-text {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Button Styles */
+.main-button, .secondary-button, .game-button {
+    font-family: var(--font-gothic);
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    text-align: center;
+}
+
+.main-button {
+    background-color: var(--dn-red);
+    color: var(--dn-white);
+    font-weight: bold;
+}
+
+.main-button:hover {
+    background-color: #8a0000;
+    transform: scale(1.05);
+}
+
+.secondary-button {
+    background-color: var(--dn-gray);
+    color: var(--dn-white);
+    border: 1px solid var(--dn-red);
+}
+
+.secondary-button:hover {
+    background-color: var(--dn-light-gray);
+}
+
+.game-button {
+    background-color: var(--dn-gray);
+    color: var(--dn-white);
+    padding: 0.5rem 1rem;
+    min-width: unset;
+    font-size: 0.9rem;
+}
+
+.game-button:hover {
+    background-color: var(--dn-light-gray);
+}
+
+/* Game Screen */
+.game-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--dn-red);
+}
+
+.game-header h2 {
+    font-family: var(--font-gothic);
+    color: var(--dn-white);
+    margin-bottom: 0.5rem;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--dn-gold);
+}
+
+.game-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Case Board */
+.case-board {
+    background-color: rgba(42, 42, 42, 0.7);
+    border: 1px solid var(--dn-light-gray);
+    padding: 1.5rem;
+    border-radius: 8px;
+    min-height: 300px;
+}
+
+/* Death Note Panel */
+.death-note-panel {
+    background-color: rgba(10, 10, 10, 0.9);
+    border: 2px solid var(--dn-red);
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.death-note-page {
+    background-color: #1a1a1a;
+    padding: 1.5rem;
+    border-radius: 4px;
+    position: relative;
+}
+
+.death-note-page h3 {
+    font-family: var(--font-gothic);
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    color: var(--dn-red);
+}
+
+.note-rules {
+    font-style: italic;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #888;
+}
+
+.name-input-area {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.name-input-area input {
+    flex: 1;
+    padding: 0.7rem;
+    background-color: #111;
+    border: 1px solid #333;
+    color: var(--dn-white);
+    font-family: var(--font-normal);
+}
+
+.name-input-area button {
+    background-color: var(--dn-red);
+    color: var(--dn-white);
+    border: none;
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+}
+
+.written-names {
+    border-top: 1px solid #333;
+    padding-top: 1rem;
+    min-height: 100px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.written-names p {
+    margin-bottom: 0.5rem;
+    font-family: var(--font-normal);
+    letter-spacing: 0.5px;
+}
+
+/* Game Controls */
+.game-controls {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Results Screen */
+#resultsScreen {
+    text-align: center;
+}
+
+#resultsScreen h2 {
+    font-family: var(--font-gothic);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--dn-gold);
+}
+
+.results-summary {
+    background-color: rgba(42, 42, 42, 0.7);
+    border: 1px solid var(--dn-light-gray);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.results-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Rules Screen */
+#rulesScreen {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#rulesScreen h2 {
+    font-family: var(--font-gothic);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--dn-gold);
+    text-align: center;
+}
+
+.rules-content {
+    background-color: rgba(42, 42, 42, 0.7);
+    border: 1px solid var(--dn-light-gray);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.rules-list, .game-rules-list {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.rules-list li, .game-rules-list li {
+    margin-bottom: 0.5rem;
+}
+
+.rules-content h3 {
+    font-family: var(--font-gothic);
+    margin: 1.5rem 0 0.5rem;
+    color: var(--dn-white);
+}
+
+/* Footer */
+.app-footer {
+    background-color: var(--dn-black);
+    border-top: 1px solid var(--dn-red);
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+    .game-content {
+        flex-direction: row;
+    }
+    
+    .case-board {
+        flex: 2;
+    }
+    
+    .death-note-panel {
+        flex: 1;
+    }
+    
+    .menu-buttons {
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 767px) {
+    .app-header {
+        padding: 0.7rem;
+    }
+    
+    .logo {
+        font-size: 1.2rem;
+    }
+    
+    .main-content {
+        padding: 1rem;
+    }
+    
+    #menuScreen h1 {
+        font-size: 2rem;
+    }
+    
+    .main-button, .secondary-button {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .game-controls {
+        justify-content: center;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+} 

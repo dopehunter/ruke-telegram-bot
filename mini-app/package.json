@@ -1,0 +1,22 @@
+{
+  "name": "death-note-mini-app",
+  "version": "1.0.0",
+  "description": "A Telegram Mini-App game based on Death Note",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server ./public -p 3000",
+    "build": "mkdir -p dist && cp -r public/* dist/ && cp -r src dist/",
+    "dev": "http-server ./ -p 3000"
+  },
+  "keywords": [
+    "telegram",
+    "mini-app",
+    "death-note",
+    "game"
+  ],
+  "author": "Ryuk",
+  "license": "MIT",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+} 
