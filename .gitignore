@@ -22,4 +22,10 @@ ENV/
 
 # OS specific files
 .DS_Store
-Thumbs.db 
+Thumbs.db # Test files that might contain sensitive information
+test_*.py
+*_test.py
+test.py
+
+# Generated files
+temp_image*.jpg
